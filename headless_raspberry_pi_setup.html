@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Headless Setup of Raspberry Pi - Interactive Learning Page</title>
+<style>
+:root{--bg:#f4f6f9;--ink:#14213d;--mut:#4a5670;--card:#fff;--acc:#b5173f;--line:#d5dbe6;--term:#10182b;--ok:#146c43;--bad:#b42318}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1424;--ink:#e8ecf5;--mut:#a3aec6;--card:#172038;--acc:#ff6b8b;--line:#2b3656;--term:#070b16;--ok:#5fd39a;--bad:#ff8a80}}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:60px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 Georgia,"Times New Roman",serif}
+h1,h2,h3,nav,button,th,.tag{font-family:"Segoe UI",Roboto,Arial,sans-serif}
+header{background:#0c1426;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:32px 32px;color:#fff;padding:54px 20px 48px;border-bottom:4px solid var(--acc)}
+header>div,main,nav div{max-width:1000px;margin:auto}
+.hero{display:grid;grid-template-columns:1.05fr 1fr;gap:34px;align-items:center}
+@media(max-width:820px){.hero{grid-template-columns:1fr}}
+header h1{font-size:clamp(2rem,5.5vw,3.4rem);margin:0 0 .25em;line-height:1.08;letter-spacing:-.02em}
+header p{margin:.4em 0 1em;max-width:52ch;color:#d3dbec;font-size:1.06rem}
+.meta{font:600 .92rem "Segoe UI",Arial,sans-serif;color:#ffb3c4;margin-bottom:12px}
+.goals{list-style:none;padding:0;margin:0 0 22px;display:grid;gap:6px;font:500 .95rem "Segoe UI",Arial,sans-serif}
+.goals li{padding-left:22px;position:relative;color:#eef2fb}
+.goals li:before{content:"";position:absolute;left:2px;top:.55em;width:9px;height:9px;border-radius:50%;background:var(--acc)}
+.cta{display:flex;gap:10px;flex-wrap:wrap}
+.cta a{display:inline-block;padding:10px 20px;border-radius:8px;font:700 .95rem "Segoe UI",Arial,sans-serif;text-decoration:none;background:#ff6b8b;color:#14081a}
+.cta a.g{background:transparent;color:#fff;border:1px solid #8a96b4}
+.cta a:focus-visible{outline:3px solid #f5a524;outline-offset:2px}
+.term{background:#050912;border:1px solid #2b3656;border-radius:12px;box-shadow:0 18px 40px rgba(0,0,0,.45);overflow:hidden}
+.tbar{display:flex;gap:6px;align-items:center;padding:9px 12px;background:#141d36;font:600 .78rem "Segoe UI",Arial,sans-serif;color:#a3aec6}
+.tbar i{width:10px;height:10px;border-radius:50%;background:#3a4668;display:inline-block}
+.tbar span{margin-left:8px}
+.tbody{margin:0;padding:14px 16px;min-height:236px;font:.86rem/1.6 Consolas,Menlo,monospace;color:#cdeedd;white-space:pre-wrap;background:none;border-radius:0}
+.tbody b{color:#ff8fa8}.tbody em{color:#8fb7ff;font-style:normal}
+.caret{display:inline-block;width:8px;height:1em;background:#cdeedd;vertical-align:-2px;animation:bl 1s steps(1) infinite}
+@keyframes bl{50%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.caret{animation:none}}
+nav{position:sticky;top:0;background:var(--card);border-bottom:1px solid var(--line);z-index:5}
+nav div{display:flex;gap:4px;overflow-x:auto;padding:6px 12px}
+nav a{white-space:nowrap;padding:6px 10px;border-radius:6px;color:var(--ink);text-decoration:none;font-size:.88rem}
+nav a:hover,nav a:focus{background:var(--acc);color:#fff;outline:none}
+main{padding:10px 16px 60px}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:22px 22px 14px;margin:22px 0}
+h2{margin:0 0 .5em;font-size:1.5rem;border-left:5px solid var(--acc);padding-left:12px}
+h3{margin:1.2em 0 .3em;font-size:1.08rem}
+p,li{max-width:80ch}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+.tw{overflow-x:auto;margin:10px 0}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--bg)}
+pre,code{font-family:Consolas,Menlo,monospace}
+pre{background:var(--term);color:#d6f5e0;padding:12px 14px;border-radius:8px;overflow-x:auto;font-size:.88rem;line-height:1.5;margin:8px 0}
+code{background:var(--bg);padding:1px 5px;border-radius:4px;font-size:.9em}pre code{background:none;padding:0}
+.note{border-left:4px solid var(--acc);background:var(--bg);padding:8px 14px;border-radius:0 8px 8px 0;margin:12px 0}
+.tag{display:inline-block;font-size:.75rem;font-weight:700;padding:1px 8px;border-radius:99px;background:var(--bg);border:1px solid var(--line)}
+button{font-size:.95rem;padding:8px 16px;border-radius:7px;border:1px solid var(--acc);background:var(--acc);color:#fff;cursor:pointer;font-weight:600}
+button.alt{background:transparent;color:var(--acc)}button:focus-visible,summary:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #f5a524;outline-offset:2px}
+input[type=text],input[type=number]{padding:7px 10px;border:1px solid var(--line);border-radius:6px;font-size:1rem;background:var(--bg);color:var(--ink);width:9em}
+details{border:1px solid var(--line);border-radius:8px;margin:8px 0;padding:8px 14px}summary{cursor:pointer;font-weight:600;font-family:"Segoe UI",Arial,sans-serif}
+.q{border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:12px 0}
+.q label{display:block;padding:3px 0;cursor:pointer}
+.q.ok{border-color:var(--ok)}.q.no{border-color:var(--bad)}.q.un{border-style:dashed}
+.exp{display:none;margin-top:8px;font-size:.93rem;color:var(--mut)}.show .exp{display:block}
+.res{font:700 1.1rem "Segoe UI",Arial,sans-serif;margin:10px 0}
+svg{max-width:100%;height:auto;background:var(--card)}svg text{fill:var(--ink);font:13px "Segoe UI",Arial,sans-serif}
+.box{fill:var(--bg);stroke:var(--ink);stroke-width:1.5}.ln{stroke:var(--acc);stroke-width:2;fill:none}
+@media print{nav,button,.noprint{display:none!important}header{background:#fff;color:#000}header p,.meta{color:#000}section{break-inside:avoid;border-color:#999}details{display:block}details>*{display:block}.exp{display:block!important}body{background:#fff;color:#000}}
+</style></head>
+<body>
+<header><div class="hero">
+<div>
+<div class="meta">Embedded Systems &amp; Linux Hardware: Single-Board Computer Bring-up (B.E./B.Tech ECE)</div>
+<h1>Set up a Raspberry Pi with no screen, no keyboard</h1>
+<p>Flash the card, power it on, find it on your network, and take control over SSH. This page teaches the full workflow, with practice questions for exams and interviews.</p>
+<ul class="goals">
+<li>Preconfigure Wi-Fi, user and SSH in Raspberry Pi Imager</li>
+<li>Locate the Pi and log in securely with keys</li>
+<li>Assign a stable IP and enable remote desktop</li>
+<li>Troubleshoot a Pi that will not connect</li>
+</ul>
+<div class="cta"><a href="#steps">Start the procedure</a><a class="g" href="#quiz">Take the quiz</a></div>
+</div>
+<div class="term" role="img" aria-label="Example terminal session connecting to a Raspberry Pi over SSH">
+<div class="tbar"><i></i><i></i><i></i><span>laptop: terminal (illustrative session)</span></div>
+<pre class="tbody" id="tb"></pre>
+</div>
+</div></header>
+<nav aria-label="Sections"><div>
+<a href="#intro">Introduction</a><a href="#diagram">Diagram</a><a href="#steps">Procedure</a><a href="#visual">Boot timeline</a><a href="#calc">Calculations</a><a href="#solved">Solved problems</a><a href="#interview">Interview prep</a><a href="#apps">Applications</a><a href="#quiz">Quiz</a><a href="#revision">Revision</a><a href="#notes">Notes</a>
+</div></nav>
+<main>
+
+<section id="intro"><h2>1. Introduction and objectives</h2>
+<p><b>Headless operation</b> means running a computer without a local display or input devices. A Raspberry Pi is a credit-card-sized Linux computer; configuring it headless lets you deploy it in a robot, sensor node, server rack, or enclosure where no screen exists.</p>
+<h3>Operating principle</h3>
+<p>The first-boot configuration (hostname, user, Wi-Fi credentials, SSH) is written to the microSD card <i>before</i> the Pi is powered. On boot, the Pi joins the network, obtains an IP address by DHCP, advertises its hostname by mDNS, and starts the SSH daemon. You then open a secure shell from another computer on the same network.</p>
+<h3>Why it matters</h3>
+<p>Headless Pis are the standard for IoT gateways, edge AI, home servers, data loggers, and lab automation. Remote administration is a core skill for embedded and hardware-validation roles.</p>
+<h3>Prerequisites</h3>
+<ul><li>Basic networking: IP address, subnet mask, gateway, DHCP, DNS.</li><li>Linux command line basics.</li><li>Client-server idea and public-key cryptography (conceptual).</li></ul>
+<h3>Key terms</h3>
+<div class="tw"><table><tr><th>Term</th><th>Meaning</th></tr>
+<tr><td>Headless</td><td>No local monitor, keyboard, or mouse.</td></tr>
+<tr><td>SSH</td><td>Secure Shell: encrypted remote login, TCP port 22.</td></tr>
+<tr><td>DHCP</td><td>Protocol that leases an IP address automatically.</td></tr>
+<tr><td>mDNS / Avahi</td><td>Resolves <code>name.local</code> without a DNS server.</td></tr>
+<tr><td>Raspberry Pi Imager</td><td>Official tool to write the OS image and preconfigure it.</td></tr>
+<tr><td>NetworkManager</td><td>Network service on Raspberry Pi OS Bookworm and later (use <code>nmcli</code>).</td></tr>
+<tr><td>VNC</td><td>Remote graphical desktop, typically TCP port 5900.</td></tr></table></div>
+<h3>Classification of headless access methods</h3>
+<div class="tw"><table><tr><th>Method</th><th>Needs</th><th>Use</th></tr>
+<tr><td>SSH over Wi-Fi / Ethernet</td><td>Network, SSH enabled</td><td>Default method</td></tr>
+<tr><td>VNC / remote desktop</td><td>Network, VNC enabled</td><td>GUI applications</td></tr>
+<tr><td>USB serial console (UART)</td><td>3.3 V USB-UART cable on GPIO 14/15</td><td>Debugging when the network fails</td></tr>
+<tr><td>USB gadget mode (Zero / Pi 4 USB-C)</td><td>USB cable, extra setup</td><td>Network over a single cable</td></tr></table></div>
+</section>
+
+<section id="diagram"><h2>2. System diagram</h2>
+<svg viewBox="0 0 900 250" role="img" aria-label="Headless setup block diagram">
+<rect class="box" x="10" y="90" width="150" height="70" rx="8"/><text x="85" y="120" text-anchor="middle">Laptop / PC</text><text x="85" y="140" text-anchor="middle">Imager + SSH client</text>
+<rect class="box" x="230" y="20" width="130" height="50" rx="8"/><text x="295" y="50" text-anchor="middle">microSD card</text>
+<rect class="box" x="230" y="100" width="130" height="50" rx="8"/><text x="295" y="130" text-anchor="middle">Router (DHCP)</text>
+<rect class="box" x="230" y="180" width="130" height="50" rx="8"/><text x="295" y="210" text-anchor="middle">5 V power supply</text>
+<rect class="box" x="480" y="60" width="200" height="130" rx="8"/><text x="580" y="85" text-anchor="middle" font-weight="700">Raspberry Pi</text><text x="580" y="110" text-anchor="middle">sshd (port 22)</text><text x="580" y="130" text-anchor="middle">Avahi (raspberrypi.local)</text><text x="580" y="150" text-anchor="middle">NetworkManager</text><text x="580" y="170" text-anchor="middle">Wi-Fi / Ethernet</text>
+<rect class="box" x="760" y="90" width="130" height="70" rx="8"/><text x="825" y="120" text-anchor="middle">Sensors, GPIO,</text><text x="825" y="140" text-anchor="middle">your project</text>
+<path class="ln" d="M160 115 L230 50"/><path class="ln" d="M295 70 L295 100" stroke-dasharray="4"/><path class="ln" d="M160 130 L230 125"/><path class="ln" d="M360 125 L480 125"/><path class="ln" d="M360 205 L420 205 L420 170 L480 170"/><path class="ln" d="M360 45 L420 45 L420 80 L480 80"/><path class="ln" d="M680 125 L760 125"/>
+<text x="195" y="75" text-anchor="middle" font-size="11">1 flash</text><text x="420" y="118" text-anchor="middle" font-size="11">2 network</text><text x="400" y="195" text-anchor="middle" font-size="11">power</text><text x="390" y="40" text-anchor="middle" font-size="11">boot</text>
+</svg>
+<p class="tag">Illustrative block diagram, not a measured result</p>
+<div class="tw"><table><tr><th>Block</th><th>Function</th></tr>
+<tr><td>microSD card</td><td>Holds OS and preconfigured settings. Use A1/A2-rated 16 GB or larger.</td></tr>
+<tr><td>Router (DHCP)</td><td>Assigns the Pi an IP address and provides the route to your laptop.</td></tr>
+<tr><td>Power supply</td><td>Regulated 5 V USB-C: official ratings are 3 A for Pi 4 and 5 A (27 W) for Pi 5. Weak supplies cause random reboots.</td></tr>
+<tr><td>sshd / Avahi</td><td>sshd accepts logins; Avahi answers mDNS name queries.</td></tr></table></div>
+</section>
+
+<section id="steps"><h2>3. Step-by-step procedure</h2>
+<h3>Step 1: Flash and preconfigure</h3>
+<ol><li>Install <b>Raspberry Pi Imager</b> on your computer.</li><li>Choose the Pi model, then <b>Raspberry Pi OS Lite (64-bit)</b> (no desktop, smallest footprint), then your microSD card.</li><li>Open <b>Edit Settings</b> (OS customisation): set hostname, username and password, Wi-Fi SSID, password and <b>country</b>, locale and time zone.</li><li>On the Services tab, enable <b>SSH</b> (password, or paste your public key).</li><li>Write the card, eject it, insert it into the Pi, and power on. First boot takes one to three minutes.</li></ol>
+<div class="note"><b>Misconception:</b> older guides tell you to add <code>wpa_supplicant.conf</code> to the boot partition and use the default user <code>pi</code>. Current Raspberry Pi OS (Bookworm onward) uses NetworkManager and has no default user; create the user in Imager. An empty file named <code>ssh</code> on the boot partition still enables SSH.</div>
+<h3>Step 2: Find the Pi</h3>
+<pre><code>ping raspberrypi.local        # replace with your hostname
+arp -a                        # list devices on your LAN
+nmap -sn 192.168.1.0/24       # scan the subnet (if nmap is installed)</code></pre>
+<p>You can also read the DHCP client list in your router's admin page.</p>
+<h3>Step 3: Log in</h3>
+<pre><code>ssh youruser@raspberrypi.local
+# or: ssh youruser@192.168.1.xx</code></pre>
+<h3>Step 4: Update and configure</h3>
+<pre><code>sudo apt update &amp;&amp; sudo apt full-upgrade -y
+sudo raspi-config          # locale, interfaces (I2C, SPI), expand options
+sudo reboot</code></pre>
+<h3>Step 5: Use key-based authentication</h3>
+<pre><code># on your computer
+ssh-keygen -t ed25519
+ssh-copy-id youruser@raspberrypi.local
+# on the Pi, after confirming key login works
+sudo nano /etc/ssh/sshd_config   # set: PasswordAuthentication no
+sudo systemctl restart ssh</code></pre>
+<div class="note">Test the key login in a <i>second</i> terminal before disabling passwords, otherwise you can lock yourself out.</div>
+<h3>Step 6: Give it a stable address</h3>
+<p>Best: a <b>DHCP reservation</b> on the router (binds the Pi's MAC to one IP). Alternative: a static IP with NetworkManager:</p>
+<pre><code>nmcli connection show
+sudo nmcli con mod "YOUR_CONNECTION" ipv4.addresses 192.168.1.50/24 \
+  ipv4.gateway 192.168.1.1 ipv4.dns 1.1.1.1 ipv4.method manual
+sudo nmcli con up "YOUR_CONNECTION"</code></pre>
+<p>Choose an address outside the router's DHCP pool to avoid conflicts.</p>
+<h3>Step 7 (optional): Remote desktop</h3>
+<p>Use RealVNC, enabled in <code>raspi-config</code> under Interface Options, with the desktop edition of Raspberry Pi OS. Lite has no desktop to share, so stay with SSH for it.</p>
+<h3>Step 8: Safe shutdown</h3>
+<pre><code>sudo shutdown -h now   # wait for the green LED to stop, then remove power</code></pre>
+<p>Pulling power while the card is writing can corrupt the filesystem.</p>
+<h3>Troubleshooting</h3>
+<div class="tw"><table><tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr>
+<tr><td>Pi never appears on network</td><td>Wrong SSID/password, missing Wi-Fi country, 5 GHz network on a 2.4 GHz-only board (Zero W, Pi 3B)</td><td>Re-flash with correct settings; use 2.4 GHz or Ethernet</td></tr>
+<tr><td><code>Connection refused</code></td><td>Host is up but SSH not enabled or not running</td><td>Re-flash with SSH enabled, or add empty <code>ssh</code> file to boot partition</td></tr>
+<tr><td><code>Connection timed out</code></td><td>Wrong IP, different subnet, client isolation, Pi offline</td><td>Check router list, same network, firewall</td></tr>
+<tr><td><code>hostname.local</code> not found</td><td>mDNS blocked or unsupported on client</td><td>Use the IP address; install Bonjour on older Windows</td></tr>
+<tr><td>Host key changed warning</td><td>Re-flashed card reused same name/IP</td><td><code>ssh-keygen -R raspberrypi.local</code> only if you know you re-flashed</td></tr>
+<tr><td>Random reboots, lightning-bolt warning</td><td>Under-voltage</td><td>Proper supply and short, thick cable</td></tr></table></div>
+</section>
+
+<section id="visual"><h2>4. Boot and connection timeline</h2>
+<svg viewBox="0 0 900 130" role="img" aria-label="Boot timeline"><line class="ln" x1="30" y1="60" x2="870" y2="60"/>
+<g text-anchor="middle"><circle cx="60" cy="60" r="7" fill="#b5173f"/><text x="60" y="95">Power on</text>
+<circle cx="260" cy="60" r="7" fill="#b5173f"/><text x="260" y="95">Firmware + kernel</text><text x="260" y="40">~10 s</text>
+<circle cx="470" cy="60" r="7" fill="#b5173f"/><text x="470" y="95">First-boot setup,</text><text x="470" y="112">network join, DHCP</text><text x="470" y="40">30-120 s</text>
+<circle cx="680" cy="60" r="7" fill="#b5173f"/><text x="680" y="95">sshd + mDNS ready</text>
+<circle cx="840" cy="60" r="7" fill="#b5173f"/><text x="840" y="95">You can ssh</text></g></svg>
+<p class="tag">Illustrative; timings vary with model, card, and first-boot tasks. No simulation screenshot was supplied, and Multisim is not applicable to this topic.</p>
+</section>
+
+<section id="calc"><h2>5. Equations and interactive calculators</h2>
+<div class="tw"><table><tr><th>Quantity</th><th>Formula</th><th>Variables</th></tr>
+<tr><td>Usable hosts</td><td>N = 2<sup>(32 &minus; n)</sup> &minus; 2</td><td>n = prefix length (bits); the &minus;2 removes network and broadcast addresses (valid for n &le; 30)</td></tr>
+<tr><td>Power</td><td>P = V &times; I</td><td>V in volts, I in amperes, P in watts</td></tr>
+<tr><td>Supply headroom</td><td>I<sub>supply</sub> &ge; 1.2 &times; I<sub>load,peak</sub></td><td>Rule of thumb, 20% margin</td></tr></table></div>
+<h3>Subnet calculator</h3>
+<p>Prefix length /<input type="number" id="pf" min="1" max="30" value="24" aria-label="Prefix length"> <button id="cb">Calculate</button></p>
+<p id="co" class="res" aria-live="polite"></p>
+<h3>Power budget calculator</h3>
+<p>Number of Pis <input type="number" id="np" min="1" value="4" aria-label="Number of Pis"> peak current per Pi (A) <input type="number" id="ip" min="0.1" step="0.1" value="1.5" aria-label="Peak current"> <button id="pb">Calculate</button></p>
+<p id="po" class="res" aria-live="polite"></p>
+</section>
+
+<section id="solved"><h2>6. Solved problems</h2>
+<details open><summary>Problem 1 (easy): hosts in a /24</summary>
+<p><b>Find:</b> usable hosts. <b>Formula:</b> N = 2<sup>(32&minus;n)</sup> &minus; 2. <b>Substitute:</b> n = 24, so N = 2<sup>8</sup> &minus; 2 = 256 &minus; 2 = <b>254</b>. <i>Interpretation:</i> a home network 192.168.1.0/24 can hold 254 devices, including the router.</p></details>
+<details><summary>Problem 2 (moderate): /26 subnet</summary>
+<p>A lab uses 192.168.10.0/26. Find the mask and usable hosts. Host bits = 32 &minus; 26 = 6, so N = 2<sup>6</sup> &minus; 2 = <b>62</b>. Mask: last octet 11000000 = 192, so <b>255.255.255.192</b>. Usable range 192.168.10.1 to 192.168.10.62, broadcast 192.168.10.63. <i>Interpretation:</i> a 40-Pi cluster fits, a 70-Pi cluster does not.</p></details>
+<details><summary>Problem 3 (GATE-style): power budget</summary>
+<p>Ten Raspberry Pi 4 nodes each draw 1.5 A peak at 5 V. One shared supply must have 20% margin. Required current = 10 &times; 1.5 = 15 A; with margin 1.2 &times; 15 = <b>18 A</b>. Power = 5 V &times; 18 A = <b>90 W</b>. <i>Shortcut:</i> margin of 20% means multiply by 1.2. <i>Interpretation:</i> choose a 5 V supply rated at 90 W or more, with short thick wiring to limit voltage drop.</p></details>
+</section>
+
+<section id="interview"><h2>7. Interview preparation</h2>
+<p>Ten practice questions for embedded, hardware validation, and IoT roles. Click to reveal.</p>
+<details><summary>1. What does headless mean, and why use it?</summary><p>Running without display or peripherals. It cuts cost and size, and suits deployed nodes that are managed remotely.</p></details>
+<details><summary>2. How do you enable SSH before first boot?</summary><p>Use Imager's OS customisation, or place an empty file named <code>ssh</code> on the boot partition. Follow-up: how would you do it on an already running Pi? Use <code>sudo raspi-config</code> or <code>sudo systemctl enable --now ssh</code>.</p></details>
+<details><summary>3. The Pi is not on the network. How do you debug?</summary><p>Check power LED and supply, then activity LED for boot. Verify Wi-Fi credentials and country, try Ethernet, read the router client list, and as a last resort attach a USB-UART console to read boot messages.</p></details>
+<details><summary>4. "Connection refused" versus "Connection timed out"?</summary><p>Refused: the host replied and nothing is listening on the port (sshd off, or wrong port). Timed out: packets get no reply, so wrong address, different network, firewall, or the device is down.</p></details>
+<details><summary>5. Why prefer SSH keys over passwords?</summary><p>Keys resist brute-force and phishing and enable automation. The private key never leaves your machine; the Pi stores only the public key in <code>~/.ssh/authorized_keys</code>.</p></details>
+<details><summary>6. Static IP or DHCP reservation?</summary><p>Reservation is usually better: one central place to manage addresses and the Pi still uses standard DHCP. Static on the device risks conflicts if the address is inside the DHCP pool.</p></details>
+<details><summary>7. How does raspberrypi.local work?</summary><p>Multicast DNS (UDP 5353) via Avahi on the Pi. Clients ask the local network who owns the name. It does not cross routers or VLANs by default.</p></details>
+<details><summary>8. Why can a Pi reboot randomly under load?</summary><p>Under-voltage from a poor supply or cable (voltage drop = I &times; R). Check <code>vcgencmd get_throttled</code> and use a rated supply.</p></details>
+<details><summary>9. How do you protect an SD card in a field deployment?</summary><p>Clean shutdown, quality card, reduce writes (logs to RAM or external storage), read-only root or overlay filesystem, UPS or supercap for power loss, backups of the image.</p></details>
+<details><summary>10. How would you provision 50 identical Pis?</summary><p>Build and test one golden image, flash copies with Imager or scripts, set unique hostnames, manage configuration with Ansible or cloud-init-style first-boot scripts, and track MAC addresses and IPs in a spreadsheet or inventory.</p></details>
+<div class="note"><b>Industry view:</b> the same skills (remote bring-up, serial console, reproducible images, secure access) apply to embedded Linux boards, test fixtures, and edge devices in product validation labs.</div>
+</section>
+
+<section id="apps"><h2>8. Applications and industry relevance</h2>
+<ul><li><b>IoT gateways and data loggers:</b> collect sensor data over I2C/SPI and push it to a cloud service.</li><li><b>Edge computing:</b> camera analytics, local inference.</li><li><b>Home and lab servers:</b> network-wide ad blocking (DNS), media, Home Assistant.</li><li><b>Test automation:</b> Pis driving GPIO relays in hardware-in-the-loop rigs.</li><li><b>Robotics and kiosks:</b> controllers in enclosures with no screen.</li></ul>
+<p><b>Advantages:</b> low cost, low power, remote management. <b>Limitations:</b> SD card wear, limited compute, power sensitivity, Wi-Fi reliability. <b>Common challenges:</b> finding the device on corporate networks, client isolation on guest Wi-Fi, and key management across many devices. <b>Roles:</b> embedded engineer, IoT developer, validation and test engineer, DevOps for edge.</p>
+</section>
+
+<section id="quiz"><h2>9. Interactive 10-question quiz</h2>
+<div id="qz"></div>
+<p class="noprint"><button id="chk">Check answers</button> <button id="rst" class="alt">Reset quiz</button></p>
+<p class="res" id="score" aria-live="polite"></p>
+</section>
+
+<section id="revision"><h2>10. Revision sheet</h2>
+<div class="tw"><table><tr><th>Item</th><th>Remember</th></tr>
+<tr><td>Ports</td><td>SSH 22, VNC 5900, mDNS UDP 5353</td></tr>
+<tr><td>Recommended image</td><td>Raspberry Pi OS Lite (64-bit) for headless</td></tr>
+<tr><td>Key commands</td><td><code>ssh</code>, <code>ssh-keygen</code>, <code>ssh-copy-id</code>, <code>raspi-config</code>, <code>nmcli</code>, <code>ping</code>, <code>arp -a</code></td></tr>
+<tr><td>Wi-Fi bands</td><td>Zero W and Pi 3B: 2.4 GHz only; Pi 3B+, 4, 5: dual-band</td></tr>
+<tr><td>Hosts formula</td><td>2<sup>(32&minus;n)</sup> &minus; 2</td></tr>
+<tr><td>Refused vs timeout</td><td>Refused = port closed; timeout = unreachable</td></tr></table></div>
+<div class="tw"><table><tr><th>Comparison</th><th>SSH</th><th>VNC</th></tr><tr><td>Interface</td><td>Text terminal</td><td>Graphical desktop</td></tr><tr><td>Bandwidth</td><td>Very low</td><td>Higher</td></tr><tr><td>Best for</td><td>Servers, scripts</td><td>GUI tools</td></tr></table></div>
+<p><b>Memory aid:</b> <i>Flash, Find, Fasten, Fix</i>: flash the image, find the IP, fasten with keys, fix the address.</p>
+</section>
+
+<section id="notes"><h2>11. Limitations and assumptions</h2>
+<ul><li>Commands target current Raspberry Pi OS (Bookworm or later). Older releases differ, especially Wi-Fi configuration; Imager menus may change between versions.</li><li>Examples assume a 192.168.1.0/24 home network; adapt addresses to yours.</li><li>No simulation screenshot was provided and Multisim does not apply, so none is embedded. Diagrams are illustrative.</li><li>Quiz and interview questions are original practice material, not past GATE questions.</li></ul>
+</section>
+</main>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+$('cb').onclick=function(){var n=parseInt($('pf').value,10);if(!(n>=1&&n<=30)){$('co').textContent='Enter a prefix from 1 to 30.';return}
+var h=Math.pow(2,32-n)-2,m=[],b=n;for(var i=0;i<4;i++){var k=Math.min(8,Math.max(0,b));m.push(256-Math.pow(2,8-k));b-=8}
+$('co').textContent='Usable hosts: '+h.toLocaleString()+'  |  Mask: '+m.join('.')};
+$('pb').onclick=function(){var n=parseFloat($('np').value),i=parseFloat($('ip').value);if(!(n>0&&i>0)){$('po').textContent='Enter positive values.';return}
+var t=n*i,s=t*1.2;$('po').textContent='Total peak: '+t.toFixed(1)+' A. With 20% margin: '+s.toFixed(1)+' A = '+(5*s).toFixed(0)+' W at 5 V.'};
+$('cb').onclick();$('pb').onclick();
+var Q=[
+["Which official tool lets you preset hostname, user, Wi-Fi and SSH before first boot?",["Raspberry Pi Imager","Wireshark","PuTTYgen","Etcher only, with no settings"],0,"Raspberry Pi Imager's OS customisation writes these settings to the card."],
+["What is the default TCP port for SSH?",["21","22","80","5900"],1,"SSH uses TCP 22. 21 is FTP, 80 HTTP, 5900 VNC."],
+["Which network manager does Raspberry Pi OS Bookworm use?",["dhcpcd only","ifupdown only","NetworkManager","systemd-boot"],2,"Bookworm switched to NetworkManager, configured with nmcli."],
+["Which command copies your public key to the Pi?",["scp-key","ssh-copy-id","ssh-agent","keygen-send"],1,"ssh-copy-id appends your public key to authorized_keys on the Pi."],
+["Why must the Wi-Fi country be set?",["It sets the keyboard layout","It sets the time zone only","The radio uses country-specific legal channels and may stay blocked without it","It changes the SSH port"],2,"Regulatory domain controls allowed channels and power; without it Wi-Fi can be disabled."],
+["Which board can connect only to 2.4 GHz Wi-Fi?",["Raspberry Pi 5","Raspberry Pi 4","Raspberry Pi 3B+","Raspberry Pi 3B"],3,"The Pi 3B has 2.4 GHz only; the 3B+, 4 and 5 are dual-band."],
+["Which protocol resolves raspberrypi.local without a DNS server?",["ARP","mDNS","NTP","SMTP"],1,"mDNS (Avahi on the Pi) answers .local name queries on the LAN."],
+["Best way to keep the Pi on the same IP while using standard DHCP?",["Change the hostname daily","DHCP reservation on the router","Disable the router","Use a random MAC each boot"],1,"A reservation maps the Pi's MAC to a fixed address."],
+["How many usable host addresses are in a /24 subnet?",["256","255","254","253"],2,"2^8 - 2 = 254 after removing network and broadcast addresses."],
+["Ping works but ssh says 'Connection refused'. Most likely cause?",["The Pi is powered off","sshd is not enabled or not listening","The router is down","Wrong subnet"],1,"Refused means the host answered and no service listens on port 22. A powered-off Pi would not answer ping."]];
+var el=$('qz');
+Q.forEach(function(q,i){var d=document.createElement('div');d.className='q';d.id='q'+i;
+var h='<b>Q'+(i+1)+'. '+q[0]+'</b>';q[1].forEach(function(o,j){h+='<label><input type="radio" name="q'+i+'" value="'+j+'"> '+o+'</label>'});
+h+='<div class="exp" id="e'+i+'"></div>';d.innerHTML=h;el.appendChild(d)});
+$('chk').onclick=function(){var s=0,u=0;
+Q.forEach(function(q,i){var d=$('q'+i),sel=document.querySelector('input[name=q'+i+']:checked'),e=$('e'+i);
+d.className='q show';var ans='Answer: '+q[1][q[2]]+'. '+q[3];
+if(!sel){u++;d.classList.add('un');e.textContent='Unanswered. '+ans}
+else if(+sel.value===q[2]){s++;d.classList.add('ok');e.textContent='Correct. '+ans}
+else{d.classList.add('no');e.textContent='Incorrect. '+ans}});
+$('score').textContent='Score: '+s+' / 10 ('+(s*10)+'%). Unanswered: '+u+'.'};
+$('rst').onclick=function(){Q.forEach(function(q,i){$('q'+i).className='q';$('e'+i).textContent='';
+document.querySelectorAll('input[name=q'+i+']').forEach(function(r){r.checked=false})});$('score').textContent=''};
+})();
+
+(function(){
+var L=[["$ ","ping -c 1 raspberrypi.local"],["","<em>64 bytes from 192.168.1.50: time=3.1 ms</em>"],["$ ","ssh maker@raspberrypi.local"],["","<em>Welcome to Raspberry Pi OS</em>"],["maker@raspberrypi:~ $ ","hostname -I"],["","<em>192.168.1.50</em>"],["maker@raspberrypi:~ $ ","echo \"no monitor needed\""],["","no monitor needed"]];
+var tb=document.getElementById('tb'),html='',reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+function draw(extra){tb.innerHTML=html+(extra||'')+'<span class="caret"></span>'}
+function esc(t){return t.replace(/</g,'&lt;')}
+if(reduce){L.forEach(function(l){html+=(l[0]?'<b>'+l[0]+'</b>':'')+(l[0]?esc(l[1]):l[1])+'\n'});draw();return}
+var i=0,j=0;
+function tick(){if(i>=L.length){draw();return}
+var l=L[i];
+if(l[0]){if(j<=l[1].length){draw('<b>'+l[0]+'</b>'+esc(l[1].slice(0,j)));j++;setTimeout(tick,45)}
+else{html+='<b>'+l[0]+'</b>'+esc(l[1])+'\n';i++;j=0;setTimeout(tick,350)}}
+else{html+=l[1]+'\n';i++;setTimeout(tick,300)}}
+tick();
+})();
+</script>
+</body></html>
